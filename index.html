@@ -1,7 +1,392 @@
-<!doctype html>
-<meta charset=
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+    <style>
+        /* デザインシステム（ライト・ダークモード共通変数） */
+        :root {
+            --bg-color: #f9fafb;
+            --text-color: #111827;
+            --text-muted: #4b5563;
+            --card-bg: #ffffff;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --border: #e5e7eb;
+        }
 
-"utf-8">
-<title>自己紹介</title>
-<h1>自己紹介</h1>
-<p>授業で作成したページです。</p>
+        [data-theme="dark"] {
+            --bg-color: #111827;
+            --text-color: #f9fafb;
+            --text-muted: #9ca3af;
+            --card-bg: #1f2937;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --border: #374151;
+        }
+
+        /* ベースリセット */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.7;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* ヘッダー・ナビゲーション */
+        header {
+            position: sticky;
+            top: 0;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            backdrop-filter: blur(8px);
+            opacity: 0.95;
+        }
+
+        .nav-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-menu a:hover {
+            color: var(--primary);
+        }
+
+        /* テーマ切り替えボタン */
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border);
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            color: var(--text-color);
+            font-size: 0.85rem;
+            transition: background-color 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--border);
+        }
+
+        /* メインレイアウト */
+        main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        section {
+            padding-top: 5rem;
+            margin-top: -3rem;
+            margin-bottom: 4rem;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 3rem;
+            height: 4px;
+            background-color: var(--primary);
+            border-radius: 2px;
+        }
+
+        /* 各コンポーネントの装飾 */
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        /* About セクション */
+        .about-text {
+            font-size: 1.05rem;
+            margin-bottom: 1rem;
+        }
+        
+        .about-sub {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Skills セクション */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .skill-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .skill-name {
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .progress-bar {
+            background-color: var(--border);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background-color: var(--primary);
+            height: 100%;
+            width: 0; /* JSでアニメーション制御 */
+            transition: width 1s ease-out;
+        }
+
+        /* Works セクション */
+        .works-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .work-card h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .work-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border);
+            padding: 0.2rem 0.6rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* Reflection セクション */
+        .reflection-content {
+            border-left: 4px solid var(--primary);
+            padding-left: 1rem;
+            font-style: italic;
+            color: var(--text-muted);
+        }
+
+        /* フッター */
+        footer {
+            text-align: center;
+            padding: 3rem 1rem;
+            margin-top: 4rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* スマートフォン向け調整 */
+        @media (max-width: 600px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            .nav-menu {
+                gap: 1rem;
+            }
+            section {
+                padding-top: 4rem;
+                margin-bottom: 3rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="nav-container">
+            <div class="nav-logo">Portfolio</div>
+            <ul class="nav-menu">
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#works">Works</a></li>
+                <li><a href="#reflection">Reflection</a></li>
+                <li><button class="theme-toggle" id="themeToggle" aria-label="テーマ切り替え">Mode</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="about">
+            <h2>About</h2>
+            <div class="card">
+                <p class="about-text">こんにちは。ご覧いただきありがとうございます。私はWeb技術に関心を持ち、日々ものづくりや課題解決に取り組んでいます。</p>
+                <p class="about-sub">シンプルで使いやすいインターフェースの設計や、効率的なコーディングを意識しています。詳細な経歴や連絡先が必要な場合は、個別にお問い合わせください。</p>
+            </div>
+        </section>
+
+        <section id="skills">
+            <h2>Skills</h2>
+            <div class="card skills-grid">
+                <div class="skill-item">
+                    <div class="skill-name"><span>HTML / CSS</span><span>85%</span></div>
+                    <div class="progress-bar"><div class="progress-fill" data-level="85%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-name"><span>JavaScript</span><span>70%</span></div>
+                    <div class="progress-bar"><div class="progress-fill" data-level="70%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-name"><span>UI/UX Design</span><span>60%</span></div>
+                    <div class="progress-bar"><div class="progress-fill" data-level="60%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-name"><span>Problem Solving</span><span>75%</span></div>
+                    <div class="progress-bar"><div class="progress-fill" data-level="75%"></div></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="works">
+            <h2>Works</h2>
+            <div class="works-grid">
+                <div class="card work-card">
+                    <h3>静的Webサイトテンプレート</h3>
+                    <p>保守性と軽量さを重視し、クリーンな構造で設計した汎用的なHTML/CSSのベーステンプレートです。</p>
+                    <div class="tag-container">
+                        <span class="tag">HTML</span>
+                        <span class="tag">CSS</span>
+                        <span class="tag">Responsive</span>
+                    </div>
+                </div>
+                <div class="card work-card">
+                    <h3>インタラクティブ・コンポーネント</h3>
+                    <p>外部ライブラリに頼らず、バニラJavaScriptのみで実装した軽量なUIパーツモジュール集です。</p>
+                    <div class="tag-container">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">DOM操作</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="reflection">
+            <h2>Reflection</h2>
+            <div class="card">
+                <div class="reflection-content">
+                    <p>「複雑なものを、いかにシンプルに保つか」を常に自身のテーマとしています。技術のトレンドは移り変わりますが、基礎となる標準仕様の理解と、利用者の視点に立った設計思想は普遍であると考えています。今後も独善的な開発に陥らず、実際の利便性を追求したアウトプットを続けてまいります。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 My Portfolio. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. ダークモード切り替え機能
+            const themeToggleBtn = document.getElementById('themeToggle');
+            const rootElement = document.documentElement;
+            
+            // 初期表示時のボタンテキスト設定
+            const updateToggleText = (theme) => {
+                themeToggleBtn.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+            };
+
+            // システムの優先設定を確認
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const initialTheme = systemPrefersDark ? 'dark' : 'light';
+            rootElement.setAttribute('data-theme', initialTheme);
+            updateToggleText(initialTheme);
+
+            // クリックイベント
+            themeToggleBtn.addEventListener('click', () => {
+                const currentTheme = rootElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                rootElement.setAttribute('data-theme', newTheme);
+                updateToggleText(newTheme);
+            });
+
+            // 2. スキルバーのアニメーション効果
+            const progressFills = document.querySelectorAll('.progress-fill');
+            
+            // IntersectionObserverで画面に入ったらバーを伸ばす
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const target = entry.target;
+                        const level = target.getAttribute('data-level');
+                        target.style.width = level;
+                        observer.unobserve(target); // 一度アニメーションしたら監視解除
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            progressFills.forEach(fill => {
+                observer.observe(fill);
+            });
+        });
+    </script>
+</body>
+</html>
